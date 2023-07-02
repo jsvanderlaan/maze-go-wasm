@@ -1,0 +1,24 @@
+{
+    "name": "maze-go-wasm",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.ts",
+    "scripts": {
+        "start": "nodemon -e go -x \"npm run build:go\"",
+        "build:go": "env GOOS=js GOARCH=wasm go build -o main.wasm",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jsvanderlaan/maze-go-wasm.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/jsvanderlaan/maze-go-wasm/issues"
+    },
+    "homepage": "https://github.com/jsvanderlaan/maze-go-wasm#readme",
+    "devDependencies": {
+        "prettier": "2.8.8"
+    }
+}
