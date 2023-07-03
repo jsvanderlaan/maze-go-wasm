@@ -35,7 +35,7 @@ type Maze struct {
 	cells bitmap.Bitmap
 }
 
-func CreateMaze(image image.Image, height int, cellShape CellShape, threshold uint8) Maze {
+func CreateMaze(image image.Image, height int, cellShape CellShape, threshold uint8) string {
 	rand.Seed(time.Now().Unix())
 
 	imageWidth := image.Bounds().Dx()
@@ -46,14 +46,14 @@ func CreateMaze(image image.Image, height int, cellShape CellShape, threshold ui
 	printBitmap(layout, width, height)
 
 	maze := dfsMaze(layout, uint32(height), uint32(width), cellShape)
-	printSquareMaze(maze, width, height)
+	return printSquareMaze(maze, width, height)
 
-	return Maze{
-		uint8(width),
-		uint8(height),
-		cellShape,
-		layout,
-	}
+	// return Maze{
+	// 	uint8(width),
+	// 	uint8(height),
+	// 	cellShape,
+	// 	layout,
+	// }
 }
 
 func dfsMaze(layout bitmap.Bitmap, height uint32, width uint32, cellShape CellShape) bitmap.Bitmap {
@@ -184,21 +184,24 @@ func calculateLayout(img image.Image, height int, width int, threshold uint8) bi
 
 func printBitmap(bm bitmap.Bitmap, width int, height int) {
 	var sb strings.Builder
+	sb.WriteString("\n")
 
 	for i := uint32(0); i < uint32(height*width); i++ {
-		if i%uint32(width) == 0 {
-			sb.WriteString("\n")
-		}
 		if bm.Contains(i) {
 			sb.WriteString("1")
 		} else {
 			sb.WriteString("0")
 		}
+
+		if i%uint32(width) == uint32(width)-1 {
+			sb.WriteString("\n")
+		}
 	}
+
 	log.Println(sb.String())
 }
 
-func printSquareMaze(bm bitmap.Bitmap, width int, height int) {
+func printSquareMaze(bm bitmap.Bitmap, width int, height int) string {
 	var sb strings.Builder
 	sb.WriteString("\n")
 
@@ -244,5 +247,5 @@ func printSquareMaze(bm bitmap.Bitmap, width int, height int) {
 		}
 	}
 
-	log.Println(sb.String())
+	return sb.String()
 }

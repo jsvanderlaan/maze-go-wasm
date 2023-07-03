@@ -29,16 +29,18 @@ func processImage(this js.Value, args []js.Value) interface{} {
 	log.Printf("JsToImg: %v", time.Since(start))
 
 	start = time.Now()
-	utils.CreateMaze(sourceImage, height, utils.Square, uint8(threshold))
+	maze := utils.CreateMaze(sourceImage, height, utils.Square, uint8(threshold))
 	log.Printf("CreateMaze: %v", time.Since(start))
 
-	start = time.Now()
-	bwImage := utils.ImgToBlackWhite(sourceImage, threshold)
-	log.Printf("ImgToBlackWhite: %v", time.Since(start))
+	// start = time.Now()
+	// bwImage := utils.ImgToBlackWhite(sourceImage, threshold)
+	// log.Printf("ImgToBlackWhite: %v", time.Since(start))
 
-	start = time.Now()
-	jsValue := utils.ImgToJs(bwImage)
-	log.Printf("ImgToJS: %v", time.Since(start))
+	// start = time.Now()
+	// jsValue := utils.ImgToJs(bwImage)
+	// log.Printf("ImgToJS: %v", time.Since(start))
+
+	jsValue := js.ValueOf(maze)
 
 	return jsValue
 }

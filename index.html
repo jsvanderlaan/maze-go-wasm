@@ -7,6 +7,7 @@
         <input type="file" id="img" />
         <div id="img-container">
             <img id="source-img" />
+            <span id="img-string" style="white-space: pre; font-family: monospace"></span>
         </div>
 
         <script>
@@ -17,16 +18,22 @@
 
                 // const blob = await fetchBlob('assets/test.jpg');
                 const blob = await fetchBlob('assets/test.png');
+                showBlob(blob);
+
                 const img = await getGrayScale(blob);
-                showImage(img);
+                console.log(img);
+                showText(img);
+                // showImage(img);
             })();
 
             const imgInput = document.getElementById('img');
             imgInput.addEventListener('change', async () => {
                 const file = imgInput.files[0];
+                showBlob(file);
 
                 const img = await getGrayScale(file);
-                showImage(img);
+                showText(img);
+                // showImage(img);
             });
 
             function getGrayScale(file) {
@@ -36,7 +43,7 @@
                     reader.onload = event => {
                         const bytes = new Uint8Array(event.target.result);
                         const threshold = 0.9;
-                        const height = 50;
+                        const height = 200;
 
                         resolve(processImage(bytes, threshold, height));
                     };
@@ -46,9 +53,17 @@
                 });
             }
 
+            function showText(text) {
+                document.getElementById('img-string').innerText = text;
+            }
+
             function showImage(buffer) {
+                showBlob(new Blob([buffer], { type: 'image/png' } /* (1) */));
+            }
+
+            function showBlob(blob) {
                 const sourceImg = document.getElementById('source-img');
-                sourceImg.src = URL.createObjectURL(new Blob([buffer], { type: 'image/png' } /* (1) */));
+                sourceImg.src = URL.createObjectURL(blob);
             }
 
             async function fetchBlob(url) {
