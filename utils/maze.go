@@ -2,6 +2,7 @@ package utils
 
 import (
 	"image"
+	"image/color"
 	"log"
 	"math/rand"
 	"strings"
@@ -22,41 +23,41 @@ const (
 	Hexagon
 )
 
-type Maze struct {
-	width  uint8
-	height uint8
-	shape  CellShape
-	// a cell consists of one bit to indicate if the cell is part of the maze
-	// followed by a number of cells equal to the number of neighbours (depends on the shape)
-	// indicating of the neighbour is connected.
-	// Starting south and going clockwise.
-	// for example for shape Square a cell with a connection to the upper and rightmost neighbours looks like
-	// 10011
-	cells bitmap.Bitmap
+type ImageOptions struct {
+	Threshold uint8
 }
 
-func CreateMaze(image image.Image, height int, cellShape CellShape, threshold uint8) string {
+type MazeOptions struct {
+	Width  int
+	Height int
+	Shape  CellShape
+}
+
+type CellOptions struct {
+	Width       int
+	Height      int
+	BorderColor color.Color
+}
+
+func CreateMaze(image image.Image, imageOptions ImageOptions, mazeOptions MazeOptions, cellOptions CellOptions) image.Image {
 	rand.Seed(time.Now().Unix())
 
-	imageWidth := image.Bounds().Dx()
-	imageHeight := image.Bounds().Dy()
-	width := int(float32(height) * (float32(imageWidth) / float32(imageHeight)))
+	layout := calculateLayout(image, imageOptions, mazeOptions)
+	// printBitmap(layout, mazeOptions.Width, mazeOptions.Height)
 
-	layout := calculateLayout(image, height, width, threshold)
-	printBitmap(layout, width, height)
+	maze := dfsMaze(layout, mazeOptions)
 
-	maze := dfsMaze(layout, uint32(height), uint32(width), cellShape)
-	return printSquareMaze(maze, width, height)
+	img := MazeToImg(maze, mazeOptions, cellOptions)
 
-	// return Maze{
-	// 	uint8(width),
-	// 	uint8(height),
-	// 	cellShape,
-	// 	layout,
-	// }
+	// log.Println(printSquareMaze(maze, mazeOptions))
+
+	return img
 }
 
-func dfsMaze(layout bitmap.Bitmap, height uint32, width uint32, cellShape CellShape) bitmap.Bitmap {
+func dfsMaze(layout bitmap.Bitmap, mazeOptions MazeOptions) bitmap.Bitmap {
+	width := uint32(mazeOptions.Width)
+	cellShape := mazeOptions.Shape
+
 	var maze bitmap.Bitmap
 	var visited bitmap.Bitmap
 	stack := []uint32{}
@@ -133,9 +134,11 @@ func dfsMaze(layout bitmap.Bitmap, height uint32, width uint32, cellShape CellSh
 	return maze
 }
 
-func calculateLayout(img image.Image, height int, width int, threshold uint8) bitmap.Bitmap {
+func calculateLayout(img image.Image, imageOptions ImageOptions, mazeOptions MazeOptions) bitmap.Bitmap {
 	imageWidth := img.Bounds().Dx()
 	imageHeight := img.Bounds().Dy()
+	width := mazeOptions.Width
+	height := mazeOptions.Height
 
 	pixelsPerCellWidthF := float32(imageWidth) / float32(width)
 	pixelsPerCellHeightF := float32(imageHeight) / float32(height)
@@ -168,7 +171,7 @@ func calculateLayout(img image.Image, height int, width int, threshold uint8) bi
 			sum := 0
 			for dy := 0; dy < pixelsPerCellWidth; dy++ {
 				for dx := 0; dx < pixelsPerCellHeight; dx++ {
-					if IsBlack(img.At(int(float32(x)*pixelsPerCellWidthF)+dx, int(float32(y)*pixelsPerCellHeightF)+dy), threshold) {
+					if IsBlack(img.At(int(float32(x)*pixelsPerCellWidthF)+dx, int(float32(y)*pixelsPerCellHeightF)+dy), imageOptions.Threshold) {
 						sum++
 					}
 				}
@@ -201,7 +204,9 @@ func printBitmap(bm bitmap.Bitmap, width int, height int) {
 	log.Println(sb.String())
 }
 
-func printSquareMaze(bm bitmap.Bitmap, width int, height int) string {
+func printSquareMaze(bm bitmap.Bitmap, mazeOptions MazeOptions) string {
+	width := mazeOptions.Width
+	height := mazeOptions.Height
 	var sb strings.Builder
 	sb.WriteString("\n")
 

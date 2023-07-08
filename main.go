@@ -9,6 +9,7 @@ import (
 	// https://github.com/golang/go/tree/master/src/syscall/js
 	"syscall/js"
 
+	"image/color"
 	_ "image/jpeg"
 )
 
@@ -20,16 +21,33 @@ func main() {
 
 func processImage(this js.Value, args []js.Value) interface{} {
 	imageArray := args[0]
-	threshold := uint8(float64(255) * js.ValueOf(args[1]).Float())
-	height := js.ValueOf(args[2]).Int()
-	log.Printf("threshold: %d;  height: %d", threshold, height)
 
 	start := time.Now()
 	sourceImage := utils.JsToImg(imageArray)
 	log.Printf("JsToImg: %v", time.Since(start))
 
+	threshold := uint8(float64(255) * js.ValueOf(args[1]).Float())
+	mazeHeight := int(js.ValueOf(args[2]).Int())
+	mazeWidth := utils.DetermineWidth(mazeHeight, sourceImage)
+	log.Printf("threshold: %d;  height: %d", threshold, mazeHeight)
+
 	start = time.Now()
-	maze := utils.CreateMaze(sourceImage, height, utils.Square, uint8(threshold))
+	maze := utils.CreateMaze(
+		sourceImage,
+		utils.ImageOptions{
+			Threshold: threshold,
+		},
+		utils.MazeOptions{
+			Width:  mazeWidth,
+			Height: mazeHeight,
+			Shape:  utils.Square,
+		},
+		utils.CellOptions{
+			Width:       10,
+			Height:      10,
+			BorderColor: color.Black,
+		})
+
 	log.Printf("CreateMaze: %v", time.Since(start))
 
 	// start = time.Now()
@@ -40,7 +58,8 @@ func processImage(this js.Value, args []js.Value) interface{} {
 	// jsValue := utils.ImgToJs(bwImage)
 	// log.Printf("ImgToJS: %v", time.Since(start))
 
-	jsValue := js.ValueOf(maze)
+	// jsValue := js.ValueOf(maze)
+	jsValue := utils.ImgToJs(maze)
 
 	return jsValue
 }

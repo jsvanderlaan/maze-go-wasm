@@ -7,7 +7,50 @@ import (
 	"log"
 	"syscall/js"
 	"time"
+
+	"github.com/kelindar/bitmap"
 )
+
+func MazeToImg(bm bitmap.Bitmap, mazeOptions MazeOptions, cellOptions CellOptions) image.Image {
+	mazeWidth := mazeOptions.Width
+	mazeHeight := mazeOptions.Height
+
+	cellWidth := cellOptions.Width
+	cellHeight := cellOptions.Height
+	cellShape := int(mazeOptions.Shape)
+	borderCol := cellOptions.BorderColor
+
+	bmCell := cellShape + 1
+
+	imageWidth := mazeWidth * cellWidth
+	imageHeight := mazeHeight * cellHeight
+
+	img := image.NewNRGBA(image.Rect(0, 0, imageWidth, imageHeight))
+	bmLength := mazeHeight * mazeWidth * bmCell
+
+	for i := 0; i < bmLength; i += bmCell {
+		bmI := uint32(i)
+		if bm.Contains(bmI) {
+			x := (i / bmCell % mazeWidth) * cellWidth
+			y := (i / bmCell / mazeWidth) * cellHeight
+
+			if !bm.Contains(bmI + 1) {
+				HLine(img, borderCol, y+cellHeight, x, x+cellWidth)
+			}
+			if !bm.Contains(bmI + 2) {
+				VLine(img, borderCol, x, y, y+cellHeight)
+			}
+			if !bm.Contains(bmI + 3) {
+				HLine(img, borderCol, y, x, x+cellWidth)
+			}
+			if !bm.Contains(bmI + 4) {
+				VLine(img, borderCol, x+cellWidth, y, y+cellHeight)
+			}
+		}
+	}
+
+	return img
+}
 
 func ImgToJs(img image.Image) js.Value {
 	start := time.Now()
@@ -45,4 +88,10 @@ func JsToImg(array js.Value) image.Image {
 	}
 
 	return sourceImage
+}
+
+func DetermineWidth(mazeHeight int, image image.Image) int {
+	imageWidth := image.Bounds().Dx()
+	imageHeight := image.Bounds().Dy()
+	return int(float32(mazeHeight) * (float32(imageWidth) / float32(imageHeight)))
 }
