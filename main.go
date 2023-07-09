@@ -20,7 +20,7 @@ func main() {
 }
 
 func processImage(this js.Value, args []js.Value) interface{} {
-	gStart:= time.Now()
+	gStart := time.Now()
 	imageArray := args[0]
 
 	start := time.Now()
