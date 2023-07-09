@@ -20,6 +20,7 @@ func main() {
 }
 
 func processImage(this js.Value, args []js.Value) interface{} {
+	gStart:= time.Now()
 	imageArray := args[0]
 
 	start := time.Now()
@@ -43,8 +44,8 @@ func processImage(this js.Value, args []js.Value) interface{} {
 			Shape:  utils.Square,
 		},
 		utils.CellOptions{
-			Width:       8,
-			Height:      8,
+			Width:       10,
+			Height:      10,
 			BorderColor: color.Black,
 		})
 
@@ -60,6 +61,7 @@ func processImage(this js.Value, args []js.Value) interface{} {
 
 	// jsValue := js.ValueOf(maze)
 	jsValue := utils.ImgToJs(maze)
+	log.Printf("Total time: %v", time.Since(gStart))
 
 	return jsValue
 }

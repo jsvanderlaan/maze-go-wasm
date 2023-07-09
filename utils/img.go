@@ -12,7 +12,43 @@ import (
 	"github.com/kelindar/bitmap"
 )
 
-func MazeToImg(bm bitmap.Bitmap, mazeOptions MazeOptions, cellOptions CellOptions, start uint32, end uint32) image.Image {
+func AddPath(img *image.NRGBA, mazeOptions MazeOptions, cellOptions CellOptions, path []uint32) {
+	cellWidth := cellOptions.Width
+	cellHeight := cellOptions.Height
+	for x := 0; x < mazeOptions.Width; x++ {
+		for y := 0; y < mazeOptions.Height; y++ {
+			i := x + (y * mazeOptions.Width)
+			xImg := x * cellWidth
+			yImg := y * cellHeight
+			for _, p := range path {
+				if i == int(p) {
+					Rect(img, color.RGBA{R: 0, G: 0, B: 255, A: 255}, xImg+(cellWidth/3), yImg+(cellHeight/3), xImg+cellWidth-(cellWidth/3), yImg+cellHeight-(cellHeight/3))
+				}
+			}
+		}
+	}
+}
+
+func AddStartEnd(img *image.NRGBA, mazeOptions MazeOptions, cellOptions CellOptions, start uint32, end uint32) {
+	cellWidth := cellOptions.Width
+	cellHeight := cellOptions.Height
+	for x := 0; x < mazeOptions.Width; x++ {
+		for y := 0; y < mazeOptions.Height; y++ {
+			i := x + (y * mazeOptions.Width)
+			xImg := x * cellWidth
+			yImg := y * cellHeight
+
+			if i == int(start) {
+				Rect(img, color.RGBA{R: 0, G: 255, B: 0, A: 255}, xImg+(cellWidth/4), yImg+(cellHeight/4), xImg+cellWidth-(cellWidth/4), yImg+cellHeight-(cellHeight/4))
+			}
+			if i == int(end) {
+				Rect(img, color.RGBA{R: 255, G: 0, B: 0, A: 255}, xImg+(cellWidth/4), yImg+(cellHeight/4), xImg+cellWidth-(cellWidth/4), yImg+cellHeight-(cellHeight/4))
+			}
+		}
+	}
+}
+
+func MazeToImg(bm bitmap.Bitmap, mazeOptions MazeOptions, cellOptions CellOptions) image.NRGBA {
 	mazeWidth := mazeOptions.Width
 	mazeHeight := mazeOptions.Height
 
@@ -38,13 +74,6 @@ func MazeToImg(bm bitmap.Bitmap, mazeOptions MazeOptions, cellOptions CellOption
 			// log.Printf("x %d y %d before", x, y)
 			// Rect(img, color.Black, x, y, x+cellWidth, y+cellHeight)
 
-			if i/bmCell == int(start) {
-				Rect(img, color.RGBA{R: 0, G: 255, B: 0, A: 255}, x+(cellWidth/4), y+(cellHeight/4), x+cellWidth-(cellWidth/4), y+cellHeight-(cellHeight/4))
-			}
-			if i/bmCell == int(end) {
-				Rect(img, color.RGBA{R: 255, G: 0, B: 0, A: 255}, x+(cellWidth/4), y+(cellHeight/4), x+cellWidth-(cellWidth/4), y+cellHeight-(cellHeight/4))
-			}
-
 			if !bm.Contains(bmI + 1) {
 				HLine(img, borderCol, y+cellHeight, x, x+cellWidth)
 			}
@@ -60,7 +89,7 @@ func MazeToImg(bm bitmap.Bitmap, mazeOptions MazeOptions, cellOptions CellOption
 		}
 	}
 
-	return img
+	return *img
 }
 
 func ImgToJs(img image.Image) js.Value {

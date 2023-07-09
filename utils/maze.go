@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"log"
@@ -39,7 +40,7 @@ type CellOptions struct {
 	BorderColor color.Color
 }
 
-func CreateMaze(image image.Image, imageOptions ImageOptions, mazeOptions MazeOptions, cellOptions CellOptions) image.Image {
+func CreateMaze(image image.Image, imageOptions ImageOptions, mazeOptions MazeOptions, cellOptions CellOptions) *image.NRGBA {
 	rand.Seed(time.Now().Unix())
 
 	layout := calculateLayout(image, imageOptions, mazeOptions)
@@ -53,14 +54,17 @@ func CreateMaze(image image.Image, imageOptions ImageOptions, mazeOptions MazeOp
 	start, end := determineStartEnd(shrinkedLayout, mazeOptions)
 	log.Printf("start %d end %d", start, end)
 
-	maze := dfsMaze(shrinkedLayout, mazeOptions, start)
+	maze, path := dfsMaze(shrinkedLayout, mazeOptions, start, end)
 	printBitmap(maze, mazeOptions.Width*(int(mazeOptions.Shape)+1), mazeOptions.Height)
+	printPath(path)
 
-	img := MazeToImg(maze, mazeOptions, cellOptions, start, end)
+	img := MazeToImg(maze, mazeOptions, cellOptions)
+	// AddPath(&img, mazeOptions, cellOptions, path)
+	AddStartEnd(&img, mazeOptions, cellOptions, start, end)
 
 	log.Println(printSquareMaze(maze, mazeOptions))
 
-	return img
+	return &img
 }
 
 func determineStartEnd(bm bitmap.Bitmap, mazeOptions MazeOptions) (uint32, uint32) {
@@ -147,31 +151,29 @@ func shrink(bm bitmap.Bitmap, mazeOptions MazeOptions) (bitmap.Bitmap, int, int)
 	return shrunk, int(newWidth) + 1, int(newHeight) + 1
 }
 
-func dfsMaze(layout bitmap.Bitmap, mazeOptions MazeOptions, start uint32) bitmap.Bitmap {
+func dfsMaze(layout bitmap.Bitmap, mazeOptions MazeOptions, start uint32, end uint32) (bitmap.Bitmap, []uint32) {
 	width := uint32(mazeOptions.Width)
 	cellShape := mazeOptions.Shape
 
 	var maze bitmap.Bitmap
 	var visited bitmap.Bitmap
 	stack := []uint32{}
+	path := []uint32{}
 
-	// start, _ := layout.Min()
-	// log.Printf("start %d", start)
 	stack = append(stack, start)
 
 	for len(stack) > 0 {
-		// printSquareMaze(maze, int(width), int(height))
 		current := stack[len(stack)-1]
-		// log.Printf("current %d", current)
 		visited.Set(current)
 		index := current * (uint32(cellShape) + 1)
-		// log.Printf("index %d", index)
+		if len(path) == 0 && current == end {
+			path = append(path, stack...)
+		}
 		maze.Set(index)
 
 		// Set previous connection
 		if len(stack) > 1 {
 			prev := stack[len(stack)-2]
-			// log.Printf("prev %d", prev)
 			if prev == current+width { // south
 				maze.Set(index + 1)
 			} else if prev == current-1 { // west
@@ -224,7 +226,7 @@ func dfsMaze(layout bitmap.Bitmap, mazeOptions MazeOptions, start uint32) bitmap
 		stack = stack[:len(stack)-1]
 	}
 
-	return maze
+	return maze, path
 }
 
 func calculateLayout(img image.Image, imageOptions ImageOptions, mazeOptions MazeOptions) bitmap.Bitmap {
@@ -276,6 +278,14 @@ func calculateLayout(img image.Image, imageOptions ImageOptions, mazeOptions Maz
 	}
 
 	return layout
+}
+
+func printPath(path []uint32) {
+	var sb strings.Builder
+	for _, p := range path {
+		sb.WriteString(fmt.Sprintf("%d, ", p))
+	}
+	log.Println(sb.String())
 }
 
 func printBitmap(bm bitmap.Bitmap, width int, height int) {
