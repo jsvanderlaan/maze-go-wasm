@@ -1,0 +1,9 @@
+-   test.png bij formaat groter dan origineel print niet juist (alleen maar een kleine strook). Het probleem is dat er hele kleine losse pixels langs de rand van de afbeelding zitten die een unattached stukje maze vormen. Ruis weghalen??
+-   ui maken zodat opties doorgegeven kunnen worden
+-   gzip
+-   ui framework or minify+bundle
+-   random start en eind kiezen
+-   start en eind weergeven
+-   remove unused whitespace from borders
+-   multiple islands
+-   er zitten onbereikbare stukken in het doolhof

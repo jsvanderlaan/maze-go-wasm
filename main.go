@@ -43,8 +43,8 @@ func processImage(this js.Value, args []js.Value) interface{} {
 			Shape:  utils.Square,
 		},
 		utils.CellOptions{
-			Width:       10,
-			Height:      10,
+			Width:       8,
+			Height:      8,
 			BorderColor: color.Black,
 		})
 

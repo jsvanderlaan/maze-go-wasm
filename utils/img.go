@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"image"
+	"image/color"
 	"image/png"
 	"log"
 	"syscall/js"
@@ -11,7 +12,7 @@ import (
 	"github.com/kelindar/bitmap"
 )
 
-func MazeToImg(bm bitmap.Bitmap, mazeOptions MazeOptions, cellOptions CellOptions) image.Image {
+func MazeToImg(bm bitmap.Bitmap, mazeOptions MazeOptions, cellOptions CellOptions, start uint32, end uint32) image.Image {
 	mazeWidth := mazeOptions.Width
 	mazeHeight := mazeOptions.Height
 
@@ -25,14 +26,24 @@ func MazeToImg(bm bitmap.Bitmap, mazeOptions MazeOptions, cellOptions CellOption
 	imageWidth := mazeWidth * cellWidth
 	imageHeight := mazeHeight * cellHeight
 
-	img := image.NewNRGBA(image.Rect(0, 0, imageWidth, imageHeight))
+	img := image.NewNRGBA(image.Rect(0, 0, imageWidth+1, imageHeight+1))
 	bmLength := mazeHeight * mazeWidth * bmCell
 
 	for i := 0; i < bmLength; i += bmCell {
+
 		bmI := uint32(i)
 		if bm.Contains(bmI) {
 			x := (i / bmCell % mazeWidth) * cellWidth
 			y := (i / bmCell / mazeWidth) * cellHeight
+			// log.Printf("x %d y %d before", x, y)
+			// Rect(img, color.Black, x, y, x+cellWidth, y+cellHeight)
+
+			if i/bmCell == int(start) {
+				Rect(img, color.RGBA{R: 0, G: 255, B: 0, A: 255}, x+(cellWidth/4), y+(cellHeight/4), x+cellWidth-(cellWidth/4), y+cellHeight-(cellHeight/4))
+			}
+			if i/bmCell == int(end) {
+				Rect(img, color.RGBA{R: 255, G: 0, B: 0, A: 255}, x+(cellWidth/4), y+(cellHeight/4), x+cellWidth-(cellWidth/4), y+cellHeight-(cellHeight/4))
+			}
 
 			if !bm.Contains(bmI + 1) {
 				HLine(img, borderCol, y+cellHeight, x, x+cellWidth)

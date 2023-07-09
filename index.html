@@ -16,14 +16,14 @@
                 const result = await WebAssembly.instantiateStreaming(fetch('main.wasm'), go.importObject);
                 go.run(result.instance);
 
-                // const blob = await fetchBlob('assets/test.jpg');
                 const blob = await fetchBlob('assets/test.png');
+                // const blob = await fetchBlob('assets/tiny.png');
                 showBlob(blob);
 
-                const img = await getProcessedImage(blob);
+                getProcessedImage(blob).then(img => showImage(img));
                 // console.log(img);
                 // showText(img);
-                showImage(img);
+                // showImage(img);
             })();
 
             const imgInput = document.getElementById('img');
@@ -42,8 +42,8 @@
 
                     reader.onload = event => {
                         const bytes = new Uint8Array(event.target.result);
-                        const threshold = 0.9;
-                        const height = 100;
+                        const threshold = 0.75;
+                        const height = 500;
 
                         resolve(processImage(bytes, threshold, height));
                     };

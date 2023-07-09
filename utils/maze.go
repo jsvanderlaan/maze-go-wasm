@@ -43,18 +43,111 @@ func CreateMaze(image image.Image, imageOptions ImageOptions, mazeOptions MazeOp
 	rand.Seed(time.Now().Unix())
 
 	layout := calculateLayout(image, imageOptions, mazeOptions)
-	// printBitmap(layout, mazeOptions.Width, mazeOptions.Height)
+	printBitmap(layout, mazeOptions.Width, mazeOptions.Height)
 
-	maze := dfsMaze(layout, mazeOptions)
+	shrinkedLayout, newWidth, newHeight := shrink(layout, mazeOptions)
+	mazeOptions.Width = newWidth
+	mazeOptions.Height = newHeight
+	printBitmap(shrinkedLayout, mazeOptions.Width, mazeOptions.Height)
 
-	img := MazeToImg(maze, mazeOptions, cellOptions)
+	start, end := determineStartEnd(shrinkedLayout, mazeOptions)
+	log.Printf("start %d end %d", start, end)
 
-	// log.Println(printSquareMaze(maze, mazeOptions))
+	maze := dfsMaze(shrinkedLayout, mazeOptions, start)
+	printBitmap(maze, mazeOptions.Width*(int(mazeOptions.Shape)+1), mazeOptions.Height)
+
+	img := MazeToImg(maze, mazeOptions, cellOptions, start, end)
+
+	log.Println(printSquareMaze(maze, mazeOptions))
 
 	return img
 }
 
-func dfsMaze(layout bitmap.Bitmap, mazeOptions MazeOptions) bitmap.Bitmap {
+func determineStartEnd(bm bitmap.Bitmap, mazeOptions MazeOptions) (uint32, uint32) {
+	edges := []uint32{}
+	max, _ := bm.Max()
+	w := uint32(mazeOptions.Width)
+
+	if max == 1 {
+		return 1, 1
+	}
+
+	for i := uint32(0); i < max; i++ {
+		y := i / w
+		x := i % w
+		if ((y == 0) ||
+			(y == uint32(mazeOptions.Height)) ||
+			(x == w-1) ||
+			(x == 0)) && bm.Contains(i) {
+			edges = append(edges, i)
+		}
+	}
+
+	rndIndex := rand.Intn(len(edges))
+	start := edges[rndIndex]
+	end := start
+	for end == start {
+		rndIndex := rand.Intn(len(edges))
+		end = edges[rndIndex]
+	}
+
+	return start, end
+}
+
+// returns new bitmap, new width, new height
+func shrink(bm bitmap.Bitmap, mazeOptions MazeOptions) (bitmap.Bitmap, int, int) {
+	originalWidth := uint32(mazeOptions.Width)
+	min, _ := bm.Min()
+	max, _ := bm.Max()
+	minHeight := min / originalWidth
+	maxHeight := max / originalWidth
+	newHeight := maxHeight - minHeight
+	log.Printf("minHeight %d", minHeight)
+	log.Printf("maxHeight %d", maxHeight)
+	log.Printf("newHeight %d", newHeight)
+
+	minWidth := originalWidth
+	maxWidth := uint32(0)
+
+	bm.Range(func(x uint32) {
+		w := x % originalWidth
+		if w > uint32(maxWidth) {
+			maxWidth = w
+		}
+		if w < uint32(minWidth) {
+			minWidth = w
+		}
+	})
+
+	newWidth := maxWidth - minWidth
+	log.Printf("minWidth %d", minWidth)
+	log.Printf("maxWidth %d", maxWidth)
+	log.Printf("newWidth %d", newWidth)
+
+	var shrunk bitmap.Bitmap
+	shrunkI := uint32(0)
+	for i := uint32(0); i <= max; i++ {
+		y := i / originalWidth
+		x := i % originalWidth
+		// log.Printf("x %d y %d i %d sI %d", x, y, i, shrunkI)
+		if (y < minHeight) ||
+			(y > maxHeight) ||
+			(x > maxWidth) ||
+			(x < minWidth) {
+			continue
+		}
+
+		if bm.Contains(i) {
+			shrunk.Set(shrunkI)
+		}
+
+		shrunkI++
+	}
+
+	return shrunk, int(newWidth) + 1, int(newHeight) + 1
+}
+
+func dfsMaze(layout bitmap.Bitmap, mazeOptions MazeOptions, start uint32) bitmap.Bitmap {
 	width := uint32(mazeOptions.Width)
 	cellShape := mazeOptions.Shape
 
@@ -62,8 +155,8 @@ func dfsMaze(layout bitmap.Bitmap, mazeOptions MazeOptions) bitmap.Bitmap {
 	var visited bitmap.Bitmap
 	stack := []uint32{}
 
-	start, _ := layout.Min()
-	log.Printf("start %d", start)
+	// start, _ := layout.Min()
+	// log.Printf("start %d", start)
 	stack = append(stack, start)
 
 	for len(stack) > 0 {
@@ -108,7 +201,7 @@ func dfsMaze(layout bitmap.Bitmap, mazeOptions MazeOptions) bitmap.Bitmap {
 			allowedNeighbours = append(allowedNeighbours, unorth)
 		}
 		east := current + 1
-		if layout.Contains(east) && !visited.Contains(east) && !maze.Contains(index+4) {
+		if layout.Contains(east) && east%(width) != 0 && !visited.Contains(east) && !maze.Contains(index+4) {
 			allowedNeighbours = append(allowedNeighbours, east)
 		}
 
