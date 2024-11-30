@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Settings } from 'src/app/settings.component.js';
 import { setupWasm } from '../wasm/wasm_exec.js';
 
 @Injectable({ providedIn: 'root' })
@@ -22,8 +23,7 @@ export class WasmService {
     //     });
     // }
 
-    process(byteArray: Uint8Array, size: number): Uint8Array {
-        const threshold = 0.75;
+    process(byteArray: Uint8Array, { threshold, size }: Settings): Uint8Array {
         return (window as any).processImage(byteArray, threshold, size);
     }
 }

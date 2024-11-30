@@ -34,10 +34,9 @@ import { Observable } from 'rxjs';
 export class ExpanderComponent implements OnInit {
     @Input({ required: true }) toggle!: Observable<any>;
     readonly header = input.required<string>();
-    show = false;
+    show = true;
 
     ngOnInit(): void {
         this.toggle.subscribe(() => (this.show = !this.show));
-        this.show = false;
     }
 }

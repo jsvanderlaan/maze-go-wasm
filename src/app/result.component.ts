@@ -14,7 +14,7 @@ export class ResultComponent {
 
     readonly shareData = computed(() => ({
         files: [
-            new File([ByteArrayHelper.toBlob(this.result(), ResultComponent.mimeTypeResult)], 'amazing.png', {
+            new File([ByteArrayHelper.toBlob(this.result(), ResultComponent.mimeTypeResult)], ResultComponent.fileName(), {
                 type: ResultComponent.mimeTypeResult,
                 lastModified: new Date().getTime(),
             }),
@@ -33,5 +33,21 @@ export class ResultComponent {
         const blob = ByteArrayHelper.toBlob(this.result(), ResultComponent.mimeTypeResult);
         const data = [new ClipboardItem({ [ResultComponent.mimeTypeResult]: blob })];
         await navigator.clipboard.write(data);
+    }
+
+    async download(): Promise<void> {
+        const blob = ByteArrayHelper.toBlob(this.result(), ResultComponent.mimeTypeResult);
+        const img = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = img;
+        link.download = ResultComponent.fileName();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    static fileName(): string {
+        return `a_maze_ing-${new Date().toISOString()}.png`;
     }
 }

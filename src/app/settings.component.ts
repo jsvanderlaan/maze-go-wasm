@@ -11,7 +11,7 @@ import { ExpanderComponent } from './expander.component';
     selector: 'app-settings',
 })
 export class SettingsComponent {
-    static readonly defaultSettings: Settings = { size: 100 };
+    static readonly defaultSettings: Settings = { size: 100, threshold: 0.75 };
 
     private readonly processService = inject(ProcessService);
 
@@ -19,13 +19,20 @@ export class SettingsComponent {
     readonly currentSettings$: Observable<Settings> = this.processService.settings;
     readonly toggle$ = this.processService.settings.asObservable();
 
-    readonly sizeMin: number = 10;
-    readonly sizeMax: number = 400;
+    readonly sizeMin = 10;
+    readonly sizeMax = 400;
+
+    readonly thresholdMin = 0;
+    readonly thresholdMax = 1;
 
     readonly form = new FormGroup({
         size: new FormControl(SettingsComponent.defaultSettings.size, {
             nonNullable: true,
             validators: [Validators.min(this.sizeMin), Validators.max(this.sizeMax)],
+        }),
+        threshold: new FormControl(SettingsComponent.defaultSettings.threshold, {
+            nonNullable: true,
+            validators: [Validators.min(this.thresholdMin), Validators.max(this.thresholdMax)],
         }),
     });
 
@@ -37,4 +44,5 @@ export class SettingsComponent {
 
 export interface Settings {
     size: number;
+    threshold: number;
 }

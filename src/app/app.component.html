@@ -8,15 +8,15 @@
 
         <main>
             <section class="mb-4">
-                @if (result) {
-                    <app-expander header="Change Image" [toggle]="toggleFileExpander">
-                        <app-file-upload></app-file-upload>
-                    </app-expander>
-                } @else {
+                <!-- @if (result) { -->
+                <app-expander header="Choose Image" [toggle]="toggleFileExpander">
+                    <app-file-upload></app-file-upload>
+                </app-expander>
+                <!-- } @else {
                     <label class="block mb-4 text-lg">Choose an Image</label>
 
                     <app-file-upload></app-file-upload>
-                }
+                } -->
             </section>
 
             @if (result) {

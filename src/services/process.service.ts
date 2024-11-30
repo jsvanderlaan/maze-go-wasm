@@ -12,6 +12,6 @@ export class ProcessService {
     readonly settings: Subject<Settings> = new BehaviorSubject(SettingsComponent.defaultSettings);
 
     readonly output: Observable<Uint8Array> = combineLatest([this.original, this.settings]).pipe(
-        map(([original, settings]) => this.wasmService.process(original, settings.size))
+        map(([original, settings]) => this.wasmService.process(original, settings))
     );
 }
