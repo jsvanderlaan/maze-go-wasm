@@ -222,5 +222,3 @@ machine-learning/tutorials/**/MovieRecommenderModel.zip
 /azure/sdk-identity-resources-storage/Properties/launchSettings.json
 
 **/**.data
-
-**/*.wasm
