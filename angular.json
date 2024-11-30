@@ -58,10 +58,10 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "configurations": {
                         "production": {
-                            "browserTarget": "maze-go-wasm:build:production"
+                          "buildTarget": "maze-go-wasm:build:production"
                         },
                         "development": {
-                            "browserTarget": "maze-go-wasm:build:development"
+                          "buildTarget": "maze-go-wasm:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -69,7 +69,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "maze-go-wasm:build"
+                      "buildTarget": "maze-go-wasm:build"
                     }
                 },
                 "test": {
