@@ -4,9 +4,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { map } from 'rxjs';
 import { ByteArrayHelper } from 'src/helpers/byte-array.helper';
 import { ProcessService } from 'src/services/process.service';
+import { ExampleUploadComponent } from './example-upload.component';
 
 @Component({
-    imports: [ReactiveFormsModule, CommonModule],
+    imports: [ReactiveFormsModule, CommonModule, ExampleUploadComponent],
     selector: 'app-file-upload',
     templateUrl: './file-upload.component.html',
 })
