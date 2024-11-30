@@ -2,10 +2,9 @@ import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-    standalone: true,
     imports: [ReactiveFormsModule],
     selector: 'app-file-upload',
-    templateUrl: './file-upload.component.html',
+    templateUrl: './file-upload.component.html'
 })
 export class FileUploadComponent {
     selectedFile: File | null = null;

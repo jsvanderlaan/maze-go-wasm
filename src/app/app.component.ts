@@ -8,10 +8,9 @@ import { FileUploadComponent } from './file-upload.component';
 import { ResultComponent } from './result.component';
 
 @Component({
-    standalone: true,
     imports: [ReactiveFormsModule, FileUploadComponent, ResultComponent, NgIf],
     selector: 'app-root',
-    templateUrl: './app.component.html',
+    templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
     readonly sizeMin: number = 10;

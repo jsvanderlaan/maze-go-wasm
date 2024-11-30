@@ -5,10 +5,9 @@ import { ImgHelper } from 'src/helpers/img.helper';
 import { ProcessService } from 'src/services/process.service';
 
 @Component({
-    standalone: true,
     imports: [CommonModule],
     selector: 'app-result',
-    templateUrl: './result.component.html',
+    templateUrl: './result.component.html'
 })
 export class ResultComponent {
     result$: Observable<string>;
