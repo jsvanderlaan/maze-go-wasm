@@ -10,8 +10,6 @@ func ToGrayScale(img image.Image) image.Image {
 }
 
 type GrayScaleImg struct {
-	// Embed image.Image so MyImg will implement image.Image
-	// because fields and methods of Image will be promoted:
 	image.Image
 }
 

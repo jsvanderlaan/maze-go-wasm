@@ -7,7 +7,6 @@ import (
 	"log"
 	"math/rand"
 	"strings"
-	"time"
 
 	"github.com/kelindar/bitmap"
 )
@@ -41,8 +40,6 @@ type CellOptions struct {
 }
 
 func CreateMaze(image image.Image, imageOptions ImageOptions, mazeOptions MazeOptions, cellOptions CellOptions) *image.NRGBA {
-	rand.Seed(time.Now().Unix())
-
 	layout := calculateLayout(image, imageOptions, mazeOptions)
 	printBitmap(layout, mazeOptions.Width, mazeOptions.Height)
 

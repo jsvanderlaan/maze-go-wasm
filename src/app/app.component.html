@@ -1,4 +1,7 @@
 <h1 class="text-4xl tracking-tight font-semibold pb-4 mb-4 border-b border-slate-200/5">Maze Generator</h1>
+
+<app-file-upload></app-file-upload>
+
 <form>
     <div class="flex flex-row">
         <label for="mazeSize" class="text-lg p-2">Size</label>
@@ -15,3 +18,4 @@
 </form>
 <div *ngIf="loading">Loading...</div>
 <img class="p-8" *ngIf="resultSrc && !loading" [src]="resultSrc" />
+<app-result></app-result>
