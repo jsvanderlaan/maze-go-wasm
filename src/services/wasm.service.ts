@@ -10,6 +10,22 @@ export class WasmService {
         go.run(result.instance);
     }
 
+    // async process(byteArray: Uint8Array, size: number): Promise<Uint8Array> {
+    //     return new Promise((resolve, reject) => {
+    //         const threshold = 0.75;
+    //         try {
+    //             resolve((window as any).processImage(byteArray, threshold, size));
+    //             return;
+    //         } catch {
+    //             reject();
+    //         }
+    //     });
+    // }
+    process(byteArray: Uint8Array, size: number): Uint8Array {
+        const threshold = 0.75;
+        return (window as any).processImage(byteArray, threshold, size);
+    }
+
     async processImage(blob: Blob, size: number): Promise<string> {
         return URL.createObjectURL(new Blob([await this._getProcessedImage(blob, size)]));
     }

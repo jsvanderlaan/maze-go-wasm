@@ -1,21 +1,101 @@
-<h1 class="text-4xl tracking-tight font-semibold pb-4 mb-4 border-b border-slate-200/5">Maze Generator</h1>
+<!-- <h1 class="text-4xl tracking-tight font-semibold pb-4 mb-4 border-b border-slate-200/5">Maze Generator</h1>
 
 <app-file-upload></app-file-upload>
+<app-size></app-size>
+<app-result></app-result> -->
+@let result = processService.output | async;
+<div class="min-h-screen bg-gray-900 text-gray-200 p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-green-500">Maze Generator</h1>
+        </header>
 
-<form>
-    <div class="flex flex-row">
-        <label for="mazeSize" class="text-lg p-2">Size</label>
-        <input [formControl]="controls.size" type="range" [min]="sizeMin" [max]="sizeMax" value="100" id="mazeSize" />
+        <main>
+            <section class="mb-4">
+                @if (result) {
+                    <app-expander header="Change Image" [toggle]="toggleFileExpander">
+                        <app-file-upload></app-file-upload>
+                    </app-expander>
+                } @else {
+                    <label class="block mb-4 text-lg">Choose an Image</label>
+
+                    <app-file-upload></app-file-upload>
+                }
+            </section>
+
+            @if (result) {
+                <section class="mb-8">
+                    <app-settings></app-settings>
+                </section>
+
+                <section class="mb-8">
+                    <app-result [result]="result"></app-result>
+                </section>
+            }
+
+            <!-- <section class="mt-8">
+                <p>Generating Maze...</p>
+                <div class="w-full h-2 bg-gray-800 rounded mt-2">
+                    <div class="bg-green-600 h-2 rounded" style="width: 50%"></div>
+                </div>
+            </section> -->
+        </main>
     </div>
-    <button
-        type="button"
-        (click)="submit()"
-        [disabled]="loading"
-        class="p-2 border border-slate-200/5 rounded-lg bg-yellow-800/70 hover:bg-yellow-800"
-    >
-        Generate maze
-    </button>
-</form>
-<div *ngIf="loading">Loading...</div>
-<img class="p-8" *ngIf="resultSrc && !loading" [src]="resultSrc" />
-<app-result></app-result>
+</div>
+
+<!-- <div class="min-h-screen bg-gray-900 text-gray-200 p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-green-400">Maze Generator</h1>
+        </header>
+
+        <main>
+            <div class="tabs flex space-x-4 mb-8">
+                <button class="px-4 py-2 bg-gray-800 rounded hover:bg-green-500">Upload</button>
+                <button class="px-4 py-2 bg-gray-800 rounded hover:bg-green-500">Settings</button>
+                <button class="px-4 py-2 bg-gray-800 rounded hover:bg-green-500">Preview</button>
+            </div>
+
+            <div class="tab-content bg-gray-800 p-6 rounded">
+                <p>Select a tab to view content</p>
+            </div>
+        </main>
+    </div>
+</div> -->
+
+<!-- <div class="min-h-screen bg-gray-900 text-gray-200 p-8 flex">
+    <aside class="w-1/4 bg-gray-800 p-4 rounded mr-8">
+        <h2 class="text-lg mb-4">Settings</h2>
+        <label class="block mb-2">Maze Size</label>
+        <input type="range" min="10" max="100" class="w-full mb-4" />
+
+        <label class="block mb-2">Threshold</label>
+        <input type="number" class="block w-full p-2 rounded bg-gray-700 mb-4" />
+
+        <label class="block mb-2">Generate Solution</label>
+        <input type="checkbox" />
+    </aside>
+
+    <div class="flex-1">
+        <header class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-green-400">Maze Generator</h1>
+        </header>
+        <main>
+            <section class="mb-8">
+                <label class="block mb-4 text-lg">Upload an Image</label>
+                <input type="file" class="block w-full p-2 rounded bg-gray-800 border border-gray-700" />
+            </section>
+
+            <section>
+                <h2 class="text-xl mb-4">Maze Preview</h2>
+                <div class="h-64 bg-gray-800 rounded flex items-center justify-center text-gray-500">
+                    <p>No image uploaded</p>
+                </div>
+                <div class="flex space-x-4 mt-4">
+                    <button class="px-4 py-2 bg-green-600 rounded hover:bg-green-500">Share</button>
+                    <button class="px-4 py-2 bg-green-600 rounded hover:bg-green-500">Copy</button>
+                </div>
+            </section>
+        </main>
+    </div>
+</div> -->

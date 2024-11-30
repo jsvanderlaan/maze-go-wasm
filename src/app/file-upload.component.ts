@@ -1,46 +1,43 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { map } from 'rxjs';
+import { ByteArrayHelper } from 'src/helpers/byte-array.helper';
+import { ProcessService } from 'src/services/process.service';
 
 @Component({
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, CommonModule],
     selector: 'app-file-upload',
-    templateUrl: './file-upload.component.html'
+    templateUrl: './file-upload.component.html',
 })
 export class FileUploadComponent {
-    selectedFile: File | null = null;
+    private processService = inject(ProcessService);
+    readonly upload$ = this.processService.original.pipe(map(arr => ByteArrayHelper.toUrl(arr)));
+    readonly maxSizeMB = 2;
+    readonly exceptedTypes = ['image/jpeg', 'image/png'];
 
-    onFileSelected(event: Event): void {
-        const fileInput = event.target as HTMLInputElement;
-        if (fileInput.files && fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            if (file.type !== 'image/jpeg') {
-                alert('Only JPG images are allowed.');
-                return;
-            }
-            if (file.size > 2 * 1024 * 1024) {
-                alert('File size exceeds 2MB.');
-                return;
-            }
-            this.selectedFile = file;
+    error: string | null = null;
+
+    async onFileSelected(event: Event): Promise<void> {
+        const { files } = event.target as HTMLInputElement;
+
+        if (files === null || files.length <= 0) {
+            this.error = 'No file selected';
+            return;
         }
-    }
 
-    async onSubmit(event: Event): Promise<void> {
-        event.preventDefault();
-        if (this.selectedFile) {
-            const arrayBuffer = await this.selectedFile.arrayBuffer();
-            const byteArray = new Uint8Array(arrayBuffer);
-            this.sendToWasm(byteArray);
+        const file = files[0];
+        if (!this.exceptedTypes.includes(file.type)) {
+            this.error = 'Only JPG images are allowed.';
+            return;
         }
-    }
+        if (file.size > this.maxSizeMB * 1024 * 1024) {
+            this.error = `File size exceeds ${this.maxSizeMB}MB.`;
+            return;
+        }
 
-    sendToWasm(byteArray: Uint8Array): void {
-        console.log(byteArray.length);
-        // Assuming you have a Go function exposed via WebAssembly
-        // if (typeof window.goFunction === 'function') {
-        //     window.goFunction(byteArray);
-        // } else {
-        //     console.error('Go WASM function not found.');
-        // }
+        const arrayBuffer = await file.arrayBuffer();
+        const byteArray = new Uint8Array(arrayBuffer);
+        this.processService.original.next(byteArray);
     }
 }

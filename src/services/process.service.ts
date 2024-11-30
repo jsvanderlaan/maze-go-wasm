@@ -1,18 +1,17 @@
-import { Injectable } from '@angular/core';
-import { map, Observable, Subject } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, combineLatest, map, Observable, ReplaySubject, Subject } from 'rxjs';
+import { Settings, SettingsComponent } from 'src/app/settings.component';
+import { WasmService } from './wasm.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ProcessService {
-    private _original: Subject<Uint8Array> = new Subject();
-    readonly output: Observable<Uint8Array>;
+    private wasmService = inject(WasmService);
+    readonly original: Subject<Uint8Array> = new ReplaySubject(1);
+    readonly settings: Subject<Settings> = new BehaviorSubject(SettingsComponent.defaultSettings);
 
-    constructor() {
-        this.output = this._original.pipe(map(arr => arr));
-    }
-
-    setOriginal(arr: Uint8Array): void {
-        this._original.next(arr);
-    }
+    readonly output: Observable<Uint8Array> = combineLatest([this.original, this.settings]).pipe(
+        map(([original, settings]) => this.wasmService.process(original, settings.size))
+    );
 }

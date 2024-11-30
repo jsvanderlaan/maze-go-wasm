@@ -1,3 +1,13 @@
-@if(result$ | async; as result) {
-<img class="p-8" [src]="result" />
-}
+<h2 class="text-xl mb-4">A<strong class="text-green-500">maze</strong>ing</h2>
+<div
+    (click)="copy()"
+    class="h-64 min-h-fit bg-gray-800 cursor-pointer hover:bg-gray-700 rounded flex items-center justify-center text-gray-400"
+>
+    <img class="p-8" [src]="url()" />
+</div>
+<div class="flex space-x-4 mt-4">
+    @if (canShare()) {
+        <button (click)="share()" class="px-4 py-2 bg-green-600 rounded hover:bg-green-500">Share</button>
+    }
+    <button (click)="copy()" class="px-4 py-2 bg-green-600 rounded hover:bg-green-500">Copy</button>
+</div>

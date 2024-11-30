@@ -1,46 +1,23 @@
-import { NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ImageService } from 'src/services/image.service';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ProcessService } from 'src/services/process.service';
 import { WasmService } from 'src/services/wasm.service';
 import { FileUploadComponent } from './file-upload.component';
 import { ResultComponent } from './result.component';
+import { SettingsComponent } from './settings.component';
+import { ExpanderComponent } from './expander.component';
 
 @Component({
-    imports: [ReactiveFormsModule, FileUploadComponent, ResultComponent, NgIf],
+    imports: [CommonModule, ReactiveFormsModule, FileUploadComponent, ResultComponent, SettingsComponent, ExpanderComponent],
     selector: 'app-root',
-    templateUrl: './app.component.html'
+    templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
-    readonly sizeMin: number = 10;
-    readonly sizeMax: number = 400;
-    resultSrc: string = '';
-    loading: boolean = false;
-
-    form: FormGroup;
-    controls = {
-        size: new FormControl(100, [Validators.min(this.sizeMin), Validators.max(this.sizeMax)]),
-    };
-    constructor(
-        private readonly _wasmService: WasmService,
-        private readonly _imgService: ImageService,
-        processService: ProcessService
-    ) {
-        this.form = new FormGroup(this.controls);
-    }
-
+    private readonly wasmService = inject(WasmService);
+    readonly processService = inject(ProcessService);
+    readonly toggleFileExpander = this.processService.original.asObservable();
     async ngOnInit(): Promise<void> {
-        await this._wasmService.loadAndRunGoWasm();
-    }
-
-    async submit(): Promise<void> {
-        this.loading = true;
-        const size = this.form.value.size;
-        console.log(size);
-        const blob = await this._imgService.fetchBlob('assets/test.jpg');
-        const url = await this._wasmService.processImage(blob, size);
-        this.resultSrc = url;
-        this.loading = false;
+        await this.wasmService.loadAndRunGoWasm();
     }
 }

@@ -1,0 +1,28 @@
+<app-expander header="Settings" [toggle]="toggle$">
+    <form>
+        <label class="block mb-2">Maze Size</label>
+        <div class="flex justify-between w-full mb-4">
+            <span class="text-sm mr-4" [ngClass]="{ 'text-orange-500': (currentSettings$ | async)?.size !== form.value.size }">{{
+                form.value.size
+            }}</span>
+            <input
+                [formControl]="form.controls.size"
+                type="range"
+                [min]="sizeMin"
+                [max]="sizeMax"
+                [value]="defaultSettings.size"
+                class="my-auto w-full appearance-none h-2 bg-gray-700 rounded-full accent-green-500"
+            />
+        </div>
+
+        <!-- <label class="block mb-2">Threshold</label>
+        <input type="number" class="block w-full p-2 bg-gray-700 rounded mb-4" placeholder="Set threshold" />
+    
+        <label class="block mb-2 items-center">
+            <input type="checkbox" class="mr-2 accent-green-600" />
+            Generate Solution
+        </label> -->
+
+        <button (click)="submit()" type="button" class="px-4 py-2 bg-green-600 rounded hover:bg-green-500">Apply</button>
+    </form>
+</app-expander>

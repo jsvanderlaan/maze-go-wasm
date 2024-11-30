@@ -1,17 +1,37 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { ImgHelper } from 'src/helpers/img.helper';
-import { ProcessService } from 'src/services/process.service';
+import { Component, computed, input } from '@angular/core';
+import { ByteArrayHelper } from 'src/helpers/byte-array.helper';
 
 @Component({
     imports: [CommonModule],
     selector: 'app-result',
-    templateUrl: './result.component.html'
+    templateUrl: './result.component.html',
 })
 export class ResultComponent {
-    result$: Observable<string>;
-    constructor(processService: ProcessService) {
-        this.result$ = processService.output.pipe(map(arr => ImgHelper.toUrl(arr)));
+    static readonly mimeTypeResult = 'image/png';
+    readonly result = input.required<Uint8Array>();
+    readonly url = computed(() => ByteArrayHelper.toUrl(this.result()));
+
+    readonly shareData = computed(() => ({
+        files: [
+            new File([ByteArrayHelper.toBlob(this.result(), ResultComponent.mimeTypeResult)], 'amazing.png', {
+                type: ResultComponent.mimeTypeResult,
+                lastModified: new Date().getTime(),
+            }),
+        ],
+    }));
+
+    readonly canShare = computed(() => navigator.canShare && navigator.canShare(this.shareData()));
+
+    async share(): Promise<void> {
+        if (this.canShare()) {
+            await navigator.share(this.shareData());
+        }
+    }
+
+    async copy(): Promise<void> {
+        const blob = ByteArrayHelper.toBlob(this.result(), ResultComponent.mimeTypeResult);
+        const data = [new ClipboardItem({ [ResultComponent.mimeTypeResult]: blob })];
+        await navigator.clipboard.write(data);
     }
 }
