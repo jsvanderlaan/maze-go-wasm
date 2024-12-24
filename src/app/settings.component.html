@@ -3,7 +3,7 @@
 
 <app-expander header="Settings" [toggle]="toggle$">
     <form>
-        <label class="block mb-2">Maze Size</label>
+        <label class="block mb-2">Maze height</label>
         <div class="flex justify-between w-full mb-4">
             <span class="text-sm mr-4" [ngClass]="{ 'text-orange-500': current?.size !== new.size }">{{ new.size }}</span>
             <input
@@ -31,11 +31,6 @@
             />
         </div>
 
-        <!-- todo -->
-        <!-- inverted threshold -->
-        <!-- include solution -->
-        <!-- choose start & end -->
-
-        <button (click)="submit()" type="button" class="px-4 py-2 bg-green-600 rounded hover:bg-green-500">Apply</button>
+        <button (click)="submit()" type="button" class="px-4 py-1 bg-green-600 rounded hover:bg-green-500">Apply</button>
     </form>
 </app-expander>

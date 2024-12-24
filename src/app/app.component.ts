@@ -1,23 +1,33 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { merge } from 'rxjs';
+import { StatusModule } from 'src/pipes/status.pipe';
 import { ProcessService } from 'src/services/process.service';
-import { WasmService } from 'src/services/wasm.service';
-import { FileUploadComponent } from './file-upload.component';
-import { ResultComponent } from './result.component';
+import { ResultComponent } from './result/result.component';
 import { SettingsComponent } from './settings.component';
-import { ExpanderComponent } from './expander.component';
+import { ExpanderComponent } from './shared/expander.component';
+import { SpinnerComponent } from './shared/spinner.component';
+import { SourceComponent } from './source/source.component';
 
 @Component({
-    imports: [CommonModule, ReactiveFormsModule, FileUploadComponent, ResultComponent, SettingsComponent, ExpanderComponent],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        SourceComponent,
+        ResultComponent,
+        SettingsComponent,
+        ExpanderComponent,
+        StatusModule,
+        SpinnerComponent,
+    ],
     selector: 'app-root',
     templateUrl: './app.component.html',
 })
-export class AppComponent implements OnInit {
-    private readonly wasmService = inject(WasmService);
+export class AppComponent {
     readonly processService = inject(ProcessService);
-    readonly toggleFileExpander = this.processService.original.asObservable();
-    async ngOnInit(): Promise<void> {
-        await this.wasmService.loadAndRunGoWasm();
-    }
+    readonly toggleFileExpander = merge(
+        this.processService.sourceImage.asObservable(),
+        this.processService.sourceText.asObservable()
+    );
 }

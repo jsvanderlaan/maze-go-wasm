@@ -18,16 +18,17 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "outputPath": {
-                          "base": "dist/maze-go-wasm"
+                            "base": "dist/maze-go-wasm"
                         },
                         "index": "src/index.html",
                         "polyfills": ["zone.js"],
-                        "tsConfig": "tsconfig.json",
+                        "tsConfig": "tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": ["src/favicon.ico", "src/assets"],
                         "styles": ["src/styles.scss"],
                         "scripts": [],
-                        "browser": "src/main.ts"
+                        "browser": "src/main.ts",
+                        "webWorkerTsConfig": "tsconfig.worker.json"
                     },
                     "configurations": {
                         "production": {
@@ -46,7 +47,7 @@
                             "outputHashing": "all"
                         },
                         "development": {
-                          "optimization": false,
+                            "optimization": false,
                             "extractLicenses": false,
                             "sourceMap": true,
                             "namedChunks": true
@@ -58,10 +59,10 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "configurations": {
                         "production": {
-                          "buildTarget": "maze-go-wasm:build:production"
+                            "buildTarget": "maze-go-wasm:build:production"
                         },
                         "development": {
-                          "buildTarget": "maze-go-wasm:build:development"
+                            "buildTarget": "maze-go-wasm:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -69,7 +70,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                      "buildTarget": "maze-go-wasm:build"
+                        "buildTarget": "maze-go-wasm:build"
                     }
                 },
                 "test": {
@@ -80,7 +81,8 @@
                         "inlineStyleLanguage": "scss",
                         "assets": ["src/favicon.ico", "src/assets"],
                         "styles": ["src/styles.scss"],
-                        "scripts": []
+                        "scripts": [],
+                        "webWorkerTsConfig": "tsconfig.worker.json"
                     }
                 }
             }

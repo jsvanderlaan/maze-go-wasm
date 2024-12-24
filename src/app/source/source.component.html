@@ -1,0 +1,29 @@
+<ul class="mb-4 items-center w-full max-w-3xl text-sm font-medium rounded-lg flex shadow-sm bg-gray-700 border-gray-600">
+    <li
+        class="w-full border-r border-gray-600 hover:bg-gray-600 rounded-l-lg"
+        [ngClass]="{ 'text-green-500 border-gray-500 border ': selected() === source.text }"
+        (click)="selected.set(source.text)"
+    >
+        <div class="flex items-center ps-3">
+            <input id="text" type="radio" value="" name="list-radio" class="hidden" />
+            <label for="text" class="w-full py-3 ms-2 text-sm font-medium">Text </label>
+        </div>
+    </li>
+    <li class="w-full border-gray-600">
+        <div
+            class="flex items-center ps-3 hover:bg-gray-600 rounded-r-lg"
+            [ngClass]="{ 'text-green-500 border-gray-500 border ': selected() === source.image }"
+            (click)="selected.set(source.image)"
+        >
+            <input id="image" type="radio" value="" name="list-radio" class="hidden" />
+            <label for="image" class="w-full py-3 ms-2 text-sm font-medium">Image </label>
+        </div>
+    </li>
+</ul>
+
+@if (selected() === source.text) {
+    <app-text-source />
+}
+@if (selected() === source.image) {
+    <app-image-source />
+}

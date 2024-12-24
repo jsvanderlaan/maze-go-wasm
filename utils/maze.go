@@ -41,25 +41,25 @@ type CellOptions struct {
 
 func CreateMaze(image image.Image, imageOptions ImageOptions, mazeOptions MazeOptions, cellOptions CellOptions) *image.NRGBA {
 	layout := calculateLayout(image, imageOptions, mazeOptions)
-	printBitmap(layout, mazeOptions.Width, mazeOptions.Height)
+	// printBitmap(layout, mazeOptions.Width, mazeOptions.Height)
 
 	shrinkedLayout, newWidth, newHeight := shrink(layout, mazeOptions)
 	mazeOptions.Width = newWidth
 	mazeOptions.Height = newHeight
-	printBitmap(shrinkedLayout, mazeOptions.Width, mazeOptions.Height)
+	// printBitmap(shrinkedLayout, mazeOptions.Width, mazeOptions.Height)
 
 	start, end := determineStartEnd(shrinkedLayout, mazeOptions)
 	log.Printf("start %d end %d", start, end)
 
-	maze, path := dfsMaze(shrinkedLayout, mazeOptions, start, end)
-	printBitmap(maze, mazeOptions.Width*(int(mazeOptions.Shape)+1), mazeOptions.Height)
-	printPath(path)
+	maze, _ := dfsMaze(shrinkedLayout, mazeOptions, start, end)
+	// printBitmap(maze, mazeOptions.Width*(int(mazeOptions.Shape)+1), mazeOptions.Height)
+	// printPath(path)
 
 	img := MazeToImg(maze, mazeOptions, cellOptions)
 	// AddPath(&img, mazeOptions, cellOptions, path)
 	AddStartEnd(&img, mazeOptions, cellOptions, start, end)
 
-	log.Println(printSquareMaze(maze, mazeOptions))
+	// log.Println(printSquareMaze(maze, mazeOptions))
 
 	return &img
 }

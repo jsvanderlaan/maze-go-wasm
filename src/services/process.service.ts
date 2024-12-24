@@ -1,17 +1,29 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, ReplaySubject, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, merge, Observable, ReplaySubject, Subject, switchMap } from 'rxjs';
 import { Settings, SettingsComponent } from 'src/app/settings.component';
-import { WasmService } from './wasm.service';
+import { inspectStatus } from 'src/helpers/inspectStatus';
+import { Status } from 'src/types/status.type';
+import { WorkerService } from './worker.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ProcessService {
-    private wasmService = inject(WasmService);
-    readonly original: Subject<Uint8Array> = new ReplaySubject(1);
+    private workerService = inject(WorkerService);
+
+    readonly sourceImage: Subject<Uint8Array> = new ReplaySubject(1);
+    readonly sourceText: Subject<{ text: string; outline: boolean }> = new ReplaySubject(1);
     readonly settings: Subject<Settings> = new BehaviorSubject(SettingsComponent.defaultSettings);
 
-    readonly output: Observable<Uint8Array> = combineLatest([this.original, this.settings]).pipe(
-        map(([original, settings]) => this.wasmService.process(original, settings))
+    private readonly _processedImage = combineLatest([this.sourceImage, this.settings]).pipe(
+        switchMap(([original, settings]) => from(this.workerService.processImage(original, settings)).pipe(inspectStatus))
     );
+
+    private readonly _processedText = combineLatest([this.sourceText, this.settings]).pipe(
+        switchMap(([{ text, outline }, settings]) =>
+            from(this.workerService.processText(text, outline, settings)).pipe(inspectStatus)
+        )
+    );
+
+    readonly output: Observable<Status<Uint8Array>> = merge(this._processedImage, this._processedText);
 }

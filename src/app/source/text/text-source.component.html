@@ -1,0 +1,21 @@
+<form [formGroup]="form">
+    <div class="mb-4">
+        <label for="text-input" class="block mb-2">Text</label>
+        <input
+            required
+            class="rounded-lg text-black pl-1 mb-1 accent-green-600"
+            type="text"
+            id="text-input"
+            formControlName="text"
+        />
+        @if (form.invalid && submitted()) {
+            <div class="text-orange-700 text-xs">Required</div>
+        }
+    </div>
+    <div class="mb-4">
+        <label for="outline-input" class="block mb-1">Outline</label>
+        <input id="outline-input" type="checkbox" formControlName="outline" class="accent-green-600" />
+    </div>
+
+    <button type="button" (click)="onSubmit()" class="px-4 py-1 bg-green-600 rounded hover:bg-green-500">Create maze</button>
+</form>

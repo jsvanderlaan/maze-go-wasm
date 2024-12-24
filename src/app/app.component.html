@@ -1,25 +1,35 @@
 @let result = processService.output | async;
 
-<div class="min-h-screen bg-gray-900 text-gray-200 p-8">
-    <div class="max-w-4xl mx-auto">
+<div class="min-h-screen bg-gray-950 text-gray-200 p-8 px-2 sm:px-4">
+    <div class="mx-auto">
         <header class="text-center mb-6">
             <h1 class="text-3xl font-bold text-green-500">Maze Generator</h1>
         </header>
 
         <main>
-            <section class="mb-4">
-                <app-expander header="Choose Image" [toggle]="toggleFileExpander">
-                    <app-file-upload></app-file-upload>
+            <section class="mb-2">
+                <app-expander header="Source" [toggle]="toggleFileExpander">
+                    <app-source />
                 </app-expander>
             </section>
 
             <section class="mb-8">
-                <app-settings></app-settings>
+                <app-settings />
             </section>
 
             @if (result) {
                 <section>
-                    <app-result [result]="result"></app-result>
+                    @if (result | loading) {
+                        <div class="flex flex-col items-center">
+                            <span class="w-32 h-32"><spinner /></span>
+                        </div>
+                    }
+                    @if (result | error) {
+                        <div>Kapot :(</div>
+                    }
+                    @if (result | done; as value) {
+                        <app-result [result]="value" />
+                    }
                 </section>
             }
         </main>

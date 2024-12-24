@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { ProcessService } from 'src/services/process.service';
-import { ExpanderComponent } from './expander.component';
+import { ExpanderComponent } from './shared/expander.component';
 
 @Component({
     imports: [ReactiveFormsModule, CommonModule, ExpanderComponent],

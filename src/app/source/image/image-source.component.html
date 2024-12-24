@@ -1,0 +1,46 @@
+@let upload = upload$ | async;
+
+<div class="mb-2">
+    <app-example-upload />
+</div>
+<div class="relative flex items-center justify-center w-full">
+    @if (upload) {
+        <div class="absolute top-0 left-0 h-64 w-full flex pointer-events-none">
+            <img class="opacity-25 m-auto max-h-full" [src]="upload" />
+        </div>
+    }
+    <label
+        for="dropzone-file"
+        class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-gray-800 border-gray-700 hover:bg-gray-700 hover:border-gray-600"
+    >
+        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+            <svg
+                class="w-8 h-8 mb-4 text-gray-400"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
+            <p class="mb-2 text-sm text-gray-400"><span class="font-semibold">Click to choose</span> or drag and drop</p>
+            <p class="text-xs text-gray-400">JPG, JPEG, PNG (MAX. 2MB)</p>
+            @if (error) {
+                <p class="text-xs text-red-500">Invalid image: {{ error }}</p>
+            }
+        </div>
+        <input
+            id="dropzone-file"
+            type="file"
+            class="hidden"
+            [accept]="exceptedTypes.join(',')"
+            (change)="onFileSelected($event)"
+        />
+    </label>
+</div>
