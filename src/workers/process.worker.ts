@@ -15,14 +15,14 @@ addEventListener('message', async ({ data: { command, payload } }) => {
 
     try {
         if (command === 'processImage') {
-            const { byteArray, threshold, size } = payload;
+            const { image, threshold, height } = payload;
 
-            const result = (self as any).processImage(byteArray, threshold, size);
+            const result = (self as any).processImage(image, threshold, height);
             postMessage({ status: 'completed', result });
         } else if (command === 'processText') {
-            const { text, outline, threshold, size } = payload;
+            const { text, outline, height } = payload;
 
-            const result = (self as any).processText(text, outline, threshold, size);
+            const result = (self as any).processText(text, outline, height);
             postMessage({ status: 'completed', result });
         }
     } catch (error: any) {

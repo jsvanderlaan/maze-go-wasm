@@ -5,7 +5,6 @@ import { merge } from 'rxjs';
 import { StatusModule } from 'src/pipes/status.pipe';
 import { ProcessService } from 'src/services/process.service';
 import { ResultComponent } from './result/result.component';
-import { SettingsComponent } from './settings.component';
 import { ExpanderComponent } from './shared/expander.component';
 import { SpinnerComponent } from './shared/spinner.component';
 import { SourceComponent } from './source/source.component';
@@ -16,7 +15,6 @@ import { SourceComponent } from './source/source.component';
         ReactiveFormsModule,
         SourceComponent,
         ResultComponent,
-        SettingsComponent,
         ExpanderComponent,
         StatusModule,
         SpinnerComponent,

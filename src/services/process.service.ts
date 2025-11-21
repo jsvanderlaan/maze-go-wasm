@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, from, merge, Observable, ReplaySubject, Subject, switchMap } from 'rxjs';
-import { Settings, SettingsComponent } from 'src/app/settings.component';
+import { from, merge, Observable, ReplaySubject, Subject, switchMap } from 'rxjs';
 import { inspectStatus } from 'src/helpers/inspectStatus';
+import { ImageSourceInput, TextSourceInput } from 'src/types/setting.type';
 import { Status } from 'src/types/status.type';
 import { WorkerService } from './worker.service';
 
@@ -11,18 +11,15 @@ import { WorkerService } from './worker.service';
 export class ProcessService {
     private workerService = inject(WorkerService);
 
-    readonly sourceImage: Subject<Uint8Array> = new ReplaySubject(1);
-    readonly sourceText: Subject<{ text: string; outline: boolean }> = new ReplaySubject(1);
-    readonly settings: Subject<Settings> = new BehaviorSubject(SettingsComponent.defaultSettings);
+    readonly sourceImage: Subject<ImageSourceInput> = new ReplaySubject(1);
+    readonly sourceText: Subject<TextSourceInput> = new ReplaySubject(1);
 
-    private readonly _processedImage = combineLatest([this.sourceImage, this.settings]).pipe(
-        switchMap(([original, settings]) => from(this.workerService.processImage(original, settings)).pipe(inspectStatus))
+    private readonly _processedImage = this.sourceImage.pipe(
+        switchMap(input => from(this.workerService.processImage(input)).pipe(inspectStatus))
     );
 
-    private readonly _processedText = combineLatest([this.sourceText, this.settings]).pipe(
-        switchMap(([{ text, outline }, settings]) =>
-            from(this.workerService.processText(text, outline, settings)).pipe(inspectStatus)
-        )
+    private readonly _processedText = this.sourceText.pipe(
+        switchMap(input => from(this.workerService.processText(input)).pipe(inspectStatus))
     );
 
     readonly output: Observable<Status<Uint8Array>> = merge(this._processedImage, this._processedText);

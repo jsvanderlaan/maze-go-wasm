@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Settings } from 'src/app/settings.component.js';
+import { ImageSourceInput, TextSourceInput } from 'src/types/setting.type';
 
 @Injectable({ providedIn: 'root' })
 export class WorkerService {
     private _worker: Worker | null = null;
 
-    processImage(byteArray: Uint8Array, { threshold, size }: Settings): Promise<any> {
-        return this._execute('processImage', { byteArray, threshold, size });
+    processImage({ image, threshold, height }: ImageSourceInput): Promise<any> {
+        return this._execute('processImage', { image, threshold, height });
     }
 
-    processText(text: string, outline: boolean, { threshold, size }: Settings): Promise<any> {
-        return this._execute('processText', { text, outline, threshold, size });
+    processText({ text, outline, height }: TextSourceInput): Promise<any> {
+        return this._execute('processText', { text, outline, height });
     }
 
     private _execute(command: string, payload: any): Promise<any> {

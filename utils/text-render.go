@@ -72,12 +72,6 @@ func RenderTextToJPG(text string, outline bool) (image.Image, error) {
 	log.Printf("textHeight %v textWidth %v", textHeightAbove+textHeightBelow, textWidth)
 
 	pX := 30
-	var pY int
-	if outline {
-		pY = 0
-	} else {
-		pY = 20
-	}
 
 	var textColor color.Color
 	var bgColor color.Color
@@ -90,7 +84,7 @@ func RenderTextToJPG(text string, outline bool) (image.Image, error) {
 		bgColor = color.White
 	}
 
-	rect := image.Rect(0, 0, textWidth+(pX*2), textHeight+(pY*2))
+	rect := image.Rect(0, 0, textWidth+(pX*2), textHeight)
 	img := image.NewRGBA(rect)
 	draw.Draw(img, img.Bounds(), &image.Uniform{C: textColor}, image.Point{}, draw.Src)
 
@@ -98,7 +92,7 @@ func RenderTextToJPG(text string, outline bool) (image.Image, error) {
 		Dst:  img,
 		Src:  image.NewUniform(bgColor),
 		Face: face,
-		Dot:  fixed.P(pX, textHeightAbove+pY),
+		Dot:  fixed.P(pX, textHeightAbove),
 	}
 	drawer.DrawString(text)
 

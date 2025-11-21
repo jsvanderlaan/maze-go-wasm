@@ -24,8 +24,7 @@ func processText(this js.Value, args []js.Value) interface{} {
 	gStart := time.Now()
 	text := js.ValueOf(args[0]).String()
 	outline := js.ValueOf(args[1]).Bool()
-	threshold := js.ValueOf(args[2]).Float()
-	height := js.ValueOf(args[3]).Int()
+	height := js.ValueOf(args[2]).Int()
 
 	start := time.Now()
 	sourceImage, err := utils.RenderTextToJPG(text, outline)
@@ -34,7 +33,7 @@ func processText(this js.Value, args []js.Value) interface{} {
 	}
 	log.Printf("RenderTextToJPG: %v", time.Since(start))
 
-	output := process(sourceImage, threshold, height)
+	output := process(sourceImage, 1.0, height)
 	log.Printf("Total time: %v", time.Since(gStart))
 
 	return output

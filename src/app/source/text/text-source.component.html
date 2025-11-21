@@ -3,13 +3,28 @@
         <label for="text-input" class="block mb-2">Text</label>
         <input
             required
-            class="rounded-lg text-black pl-1 mb-1 accent-green-600"
+            class="rounded-lg text-black pl-1 py-1 mb-1 accent-green-600"
             type="text"
             id="text-input"
             formControlName="text"
         />
-        @if (form.invalid && submitted()) {
+        @if (form.controls.text.errors && submitted()) {
             <div class="text-orange-700 text-xs">Required</div>
+        }
+    </div>
+    <div class="mb-4">
+        <label for="height-input" class="block mb-2">Height</label>
+        <input
+            id="height-input"
+            [formControl]="form.controls.height"
+            type="number"
+            [min]="1"
+            [max]="1000"
+            [value]="defaultHeight"
+            class="rounded-lg text-black pl-1 py-1 accent-green-600"
+        />
+        @if (form.controls.height.errors && submitted()) {
+            <p class="text-xs text-red-500 mt-1">Must be a valid number between {{ minHeight }} and {{ maxHeight }}.</p>
         }
     </div>
     <div class="mb-4">

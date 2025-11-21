@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { ProcessService } from 'src/services/process.service';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
     imports: [],
@@ -51,7 +50,8 @@ import { ProcessService } from 'src/services/process.service';
     `,
 })
 export class ExampleUploadComponent {
-    private readonly processService = inject(ProcessService);
+    @Output() next = new EventEmitter<Uint8Array>();
+
     readonly examples = ['balloon.jpg', 'pikachu.jpg', 'heart.jpg', 'square.png', 'go.png', 'infinity.jpg', 'donut.png'].map(
         x => `assets/examples/${x}`
     );
@@ -59,7 +59,7 @@ export class ExampleUploadComponent {
     async selectImage(image: string): Promise<void> {
         const response = await fetch(image);
         const array = new Uint8Array(await response.arrayBuffer());
-        this.processService.sourceImage.next(array);
+        this.next.emit(array);
     }
 
     scrollCarousel(direction: 'left' | 'right'): void {
