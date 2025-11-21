@@ -4,7 +4,7 @@ ARG NGINX_VERSION=alpine3.22
 # =========================================
 # Stage 0: Build the GO WebAssembly Module
 # =========================================
-FROM golang:1.19 AS go-builder
+FROM golang:1.24.2 AS go-builder
 
 WORKDIR /app
 
